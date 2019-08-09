@@ -46,7 +46,8 @@ function f_info {
 
 function f_checkroot {
     if [[ "$(id -u)" -ne 0 ]]; then
-        printf "Run this program as root!\n"
+        echo "Run this program as root!"
+        echo ""
         exit 1
     fi
 }
@@ -70,7 +71,7 @@ function f_start {
     done
 
 
-    printf "Configuring ipset..."
+    echo "Configuring ipset..."
     /sbin/ipset -q -N "$IPSETNAME" iphash
     /usr/bin/wget -q "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=$MYIP&port=$PORT" -O - | /bin/sed '/^#/d' | while read IP
     do
@@ -84,7 +85,7 @@ function f_start {
 
 
 
-    printf "Configuring iptables..."
+    echo "Configuring iptables..."
     checkiptables=$(/sbin/iptables --list | /bin/grep -o "$IPSETNAME src")
     if [[ $checkiptables == "" ]]; then
         /sbin/iptables -A INPUT -p tcp --dport "$PORT" -m set --match-set "$IPSETNAME" src -j DROP
