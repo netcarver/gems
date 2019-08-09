@@ -45,19 +45,15 @@ IPSETNAME="tor$PORT"
 
 
 function f_info {
-    echo ""
-    # echo "Program:       $PROGNAME"
-    echo "Port:          $PORT"
+    echo -e "\nPort:          $PORT"
     echo "IPSet name:    $IPSETNAME"
-    echo "My IP address: $MYIP"
-    echo ""
+    echo -e "My IP address: $MYIP\n"
 }
 
 
 function f_checkroot {
     if [[ "$(id -u)" -ne 0 ]]; then
-        echo "Run this program as root!"
-        echo ""
+        echo -e "\nYou need to be root to run this. Try 'sudo !!'\n"
         exit 1
     fi
 }
@@ -65,8 +61,7 @@ function f_checkroot {
 
 function f_start {
     f_checkroot
-    echo ""
-    echo "Starting $PROGNAME."
+    echo -e "\nStarting $PROGNAME."
     f_info
 
     local DEPENDENCIES
@@ -74,8 +69,7 @@ function f_start {
     for PACKAGE in $DEPENDENCIES; do
         COUNT=$(/usr/bin/dpkg -l | /bin/grep -i -c "$PACKAGE")
         if [ "$COUNT" -eq "0" ]; then
-            echo "'$PACKAGE' isn't installed. To install: sudo apt install '$PACKAGE'"
-            echo ""
+            echo -e "'$PACKAGE' isn't installed. To install: sudo apt install '$PACKAGE'\n"
             exit 1
         fi
     done
@@ -114,20 +108,17 @@ function f_start {
         /usr/bin/touch "/etc/iptables/rules.v4"
     fi
     /sbin/iptables-save > /etc/iptables/rules.v4
-    echo "Done. Saved: /etc/iptables/rules.v4"
-    echo ""
+    echo -e "Done. Saved: /etc/iptables/rules.v4\n"
 }
 
 
 function f_stop {
     f_checkroot
-    echo ""
-    echo "Stopping $PROGNAME."
+    echo -e "\nStopping $PROGNAME."
     f_info
     /sbin/iptables -D INPUT -p tcp --dport "$PORT" -m set --match-set "$IPSETNAME" src -j DROP
     /sbin/ipset destroy "$IPSETNAME"
-    echo "$PROGNAME stopped, rules removed."
-    echo ""
+    echo -e "$PROGNAME stopped, rules removed.\n"
 }
 
 
@@ -135,8 +126,7 @@ case "$1" in
     --start) f_start ;;
     --stop) f_stop ;;
     *)
-        echo "Usage: sudo $PROGNAME [--start|--stop] <port number>"
-        echo "<port number> is optional. Defaults to 22 if not supplied."
-        echo ""
+        echo -e "\nUsage: sudo $PROGNAME [--start|--stop] <port number>"
+        echo -e "<port number> is optional. Defaults to 22 if not supplied.\n"
         exit 1
 esac
