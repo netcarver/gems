@@ -3,6 +3,19 @@
 # Uses an ipset to block connections from all Tor Exit Nodes that can access the given port on this machine.
 # By default, the port used is SSH's: port 22, though you can specify any port you like.
 #
+#
+# Examples
+# --------
+#
+# Prevent Tor exit nodes from accessing port 22 on this machine: sudo tor-block.sh --start
+# Prevent Tor exit nodes from accessing https on this machine:   sudo tor-block.sh --start 443
+# Remove blocks vs https port (leaving ssh blocks in place):     sudo tor-block.sh --stop  443
+# Remove blocks vs sshd port:                                    sudo tor-block.sh --stop
+#
+#
+# Credits
+# -------
+#
 # This is based on code from @thelinuxchoice
 # See: https://github.com/thelinuxchoice/blocktor
 #
@@ -20,6 +33,7 @@ if [ ! -z "$2" ]; then
 fi
 IPSETNAME="tor$PORT"
 
+
 function f_info {
     echo ""
     # echo "Program:       $PROGNAME"
@@ -28,6 +42,7 @@ function f_info {
     echo "My IP address: $MYIP"
     echo ""
 }
+
 
 function f_checkroot {
     if [[ "$(id -u)" -ne 0 ]]; then
