@@ -13,6 +13,16 @@
 # Remove blocks vs sshd port:                                    sudo tor-block.sh --stop
 #
 #
+# Cron
+# ----
+#
+# You can setup a root crontab line to start blocking on reboots and also on a daily basis to adjust the blocklist.
+#
+# sudo crontab -e
+# @reboot   /path/to/tor-block.sh --start
+# 0 4 * * * /path/to/tor-block.sh --start
+#
+#
 # Credits
 # -------
 #
@@ -56,7 +66,7 @@ function f_checkroot {
 function f_start {
     f_checkroot
     echo ""
-    echo "Starting tor-block."
+    echo "Starting $PROGNAME."
     f_info
 
     local DEPENDENCIES
@@ -80,14 +90,14 @@ function f_start {
     if [ ! -d "/etc/iptables" ]; then
         /bin/mkdir "/etc/iptables"
     fi
-    /sbin/ipset -q save -f "/etc/iptables/ipset.rules"
+    /sbin/ipset -q save -s -f "/etc/iptables/ipset.rules"
     echo "Done. Saved to /etc/iptables/ipset.rules"
 
 
 
     echo "Configuring iptables..."
-    checkiptables=$(/sbin/iptables --list | /bin/grep -o "$IPSETNAME src")
-    if [[ $checkiptables == "" ]]; then
+    CHECKIPTABLES=$(/sbin/iptables --list | /bin/grep -o "$IPSETNAME src")
+    if [[ $CHECKIPTABLES == "" ]]; then
         /sbin/iptables -A INPUT -p tcp --dport "$PORT" -m set --match-set "$IPSETNAME" src -j DROP
     fi
     if [ ! -e "/etc/iptables/rules.v4" ]; then
