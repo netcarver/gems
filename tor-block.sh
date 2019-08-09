@@ -104,7 +104,11 @@ function f_start {
     echo "Configuring iptables..."
     CHECKIPTABLES=$(/sbin/iptables --list | /bin/grep -o "$IPSETNAME src")
     if [[ $CHECKIPTABLES == "" ]]; then
-        /sbin/iptables -A INPUT -p tcp --dport "$PORT" -m set --match-set "$IPSETNAME" src -j DROP
+        #
+        # Insert our rule at the head of the INPUT chain, as appending it when we are using UFW puts it after ACCEPTing
+        # rules, meaning it never gets run.
+        #
+        /sbin/iptables -I INPUT -p tcp --dport "$PORT" -m set --match-set "$IPSETNAME" src -j DROP
     fi
     if [ ! -e "/etc/iptables/rules.v4" ]; then
         /usr/bin/touch "/etc/iptables/rules.v4"
