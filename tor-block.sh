@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Uses an ipset to block access from all Tor Exit Nodes that can access a given port on this machine.
+# By default, the port used is SSH's port 22, though you can specify any port you like.
+#
 # Based on code from @thelinuxchoice
 # See: https://github.com/thelinuxchoice/blocktor
 #
