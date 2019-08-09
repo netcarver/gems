@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Uses an ipset to block access from all Tor Exit Nodes that can access a given port on this machine.
-# By default, the port used is SSH's port 22, though you can specify any port you like.
+# Uses an ipset to block connections from all Tor Exit Nodes that can access the given port on this machine.
+# By default, the port used is SSH's: port 22, though you can specify any port you like.
 #
-# Based on code from @thelinuxchoice
+# This is based on code from @thelinuxchoice
 # See: https://github.com/thelinuxchoice/blocktor
 #
 # Also see: http://mikhailian.mova.org/node/194
@@ -46,7 +46,7 @@ function f_start {
     local DEPENDENCIES
     DEPENDENCIES="iptables ipset"
     for PACKAGE in $DEPENDENCIES; do
-        COUNT=$(/usr/bin/dpkg -l | grep -i -c "$PACKAGE")
+        COUNT=$(/usr/bin/dpkg -l | /bin/grep -i -c "$PACKAGE")
         if [ "$COUNT" -eq "0" ]; then
             echo "'$PACKAGE' isn't installed. To install: sudo apt install '$PACKAGE'"
             echo ""
