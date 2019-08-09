@@ -82,15 +82,21 @@ function f_start {
 
 
     echo "Configuring ipset..."
-    /sbin/ipset -q -N "$IPSETNAME" iphash
+    # Create set if it doesn't already exist
+    /sbin/ipset -! -N "$IPSETNAME" iphash
+
+    # Make sure the set is empty
+    /sbin/ipset flush "$IPSETNAME"
+
     /usr/bin/wget -q "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=$MYIP&port=$PORT" -O - | /bin/sed '/^#/d' | while read IP
     do
-        /sbin/ipset -q -A "$IPSETNAME" "$IP"
+        # Add ip addresses to set
+        /sbin/ipset -! -A "$IPSETNAME" "$IP"
     done
     if [ ! -d "/etc/iptables" ]; then
         /bin/mkdir "/etc/iptables"
     fi
-    /sbin/ipset -q save -s -f "/etc/iptables/ipset.rules"
+    /sbin/ipset save -s -f "/etc/iptables/ipset.rules"
     echo "Done. Saved to /etc/iptables/ipset.rules"
 
 
